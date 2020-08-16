@@ -1,5 +1,9 @@
 # vite-electron
 
-Create Electron project with vite and vue3
+Create and build electron project with vite and vue3
 
-Now this project is not ready to use.
+## [This project is not ready to use now.]
+
+Install
+
+`yarn add vite-electron --dev`

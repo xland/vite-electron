@@ -1,15 +1,16 @@
 {
   "name": "vite-electron",
   "version": "0.0.1",
-  "description": "Create Electron project with vite and vue3",
-  "main": "index.js",
+  "description": "Create and build electron project with vite and vue3",
+  "main": "./dist/index.js",
+  "bin": {
+    "vite-electron": "./dist/bin/cli.js"
+  },
   "scripts": {
+    "dev": "tsc -w --incremental --p src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/xland/vite-electron.git"
-  },
+  "repository": "git+https://github.com/xland/vite-electron.git",
   "keywords": [
     "vite",
     "electron",
@@ -20,5 +21,12 @@
   "bugs": {
     "url": "https://github.com/xland/vite-electron/issues"
   },
-  "homepage": "https://github.com/xland/vite-electron#readme"
+  "homepage": "https://github.com/xland/vite-electron#readme",
+  "devDependencies": {
+    "@types/node": "^14.0.27",
+    "electron": "^9.2.0",
+    "electron-builder": "^22.8.0",
+    "vite": "^1.0.0-rc.4"
+  },
+  "dependencies": {}
 }
