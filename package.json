@@ -1,0 +1,24 @@
+{
+  "name": "vite-electron",
+  "version": "0.0.1",
+  "description": "Create Electron project with vite and vue3",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xland/vite-electron.git"
+  },
+  "keywords": [
+    "vite",
+    "electron",
+    "vue3"
+  ],
+  "author": "xland",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/xland/vite-electron/issues"
+  },
+  "homepage": "https://github.com/xland/vite-electron#readme"
+}
