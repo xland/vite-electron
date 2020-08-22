@@ -1,18 +1,13 @@
-const fs = require("fs-extra");
-const os = require("os");
 const path = require("path");
-const execa = require("execa");
 const { createServer } = require("vite");
+const { spawn } = require("child_process");
 const { resolve } = require("path");
-const argv = require("minimist")(process.argv.slice(2));
 jest.setTimeout(100000);
 let devServer;
+let electronProcess;
 beforeAll(async () => {
-  console.log("create server");
   let demoDir = path.join(__dirname, "demo");
-  await execa("yarn", { cwd: demoDir });
-  const options = { root: demoDir };
-  console.log("create server");
+  const options = { root: path.join(demoDir, "renderer") };
   devServer = createServer(options);
   let port = options.port || 3000;
   devServer.on("error", (e) => {
@@ -27,36 +22,33 @@ beforeAll(async () => {
       console.error(e);
     }
   });
-  return new Promise((resolve) => {
+  await new Promise((resolve) => {
     devServer.listen(port, () => {
       console.log(`http://localhost:${port}`);
       resolve();
     });
   });
-
-  // await execa("yarn", { cwd: demoDir });
-  // await new Promise((resolve) => {
-  //   devServer = execa(viteBin, { cwd: demoDir });
-  //   devServer.stderr.on("data", (data) => {
-  //     console.error(data.toString());
-  //     resolve();
-  //   });
-  //   devServer.stdout.on("data", (data) => {
-  //     if (data.toString().match("running")) {
-  //       console.log("dev server running.");
-  //       resolve();
-  //     }
-  //   });
-  // });
-  // console.log("ok");
+  electronProcess = spawn(
+    require("electron").toString(),
+    [path.join(demoDir, "main/index.js")],
+    {
+      env: {
+        ELECTRON_HMR_SOCKET_PATH: port,
+      },
+    }
+  );
+  electronProcess.stdout.on("data", (data) => {
+    data = data.toString();
+    console.log(data);
+  });
 });
 afterAll(async () => {
-  await new Promise((resolve) =>
-    setTimeout(() => {
+  return new Promise((resolve) => {
+    electronProcess.on("close", (exitCode) => {
       devServer.close();
       resolve();
-    }, 66000)
-  );
+    });
+  });
 });
 describe("vite-electron", () => {
   describe("build", () => {
