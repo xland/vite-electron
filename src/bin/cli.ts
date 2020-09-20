@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { dev } from "../Dev";
+import { build } from "../Build";
 const argv = require("minimist")(process.argv.slice(2));
 
 (async () => {
@@ -16,7 +17,7 @@ const argv = require("minimist")(process.argv.slice(2));
   if (command === "start") {
     dev.start();
   } else if (command === "release") {
-    console.log("release");
+    build.start();
   }
 })();
 

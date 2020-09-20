@@ -1,6 +1,6 @@
-let esbuild = require("esbuild");
-let { readFileSync } = require("fs");
-let path = require("path");
+const esbuild = require("esbuild");
+const { readFileSync } = require("fs");
+const path = require("path");
 
 let pkgJsonPath = path.join(process.cwd(), "package.json");
 let localPkgJson = JSON.parse(readFileSync(pkgJsonPath, "utf-8"));

@@ -4,11 +4,11 @@ const { spawn } = require("child_process");
 const chalk = require("chalk");
 
 class Dev {
-  viteServerPort = 3000;
-  viteServer: any;
-  electronProcess: any;
-  projectPath = process.cwd();
-  viteServerOnErr(err) {
+  private viteServerPort = 3000;
+  private viteServer: any;
+  private electronProcess: any;
+  private projectPath = process.cwd();
+  private viteServerOnErr(err) {
     if (err.code === "EADDRINUSE") {
       console.log(
         `Port ${this.viteServerPort} is in use, trying another one...`
@@ -24,7 +24,7 @@ class Dev {
       console.error(err);
     }
   }
-  createViteServer() {
+  private createViteServer() {
     return new Promise((resolve, reject) => {
       let options = {
         root: this.projectPath,
@@ -42,7 +42,8 @@ class Dev {
       });
     });
   }
-  createElectronProcess() {
+  private createElectronProcess() {
+    //todo 自动创建background.js
     this.electronProcess = spawn(
       require("electron").toString(),
       [path.join(this.projectPath, "src/background.js")],
