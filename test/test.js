@@ -1,13 +1,36 @@
 const path = require("path");
-const { createServer } = require("vite");
+const { createServer, build: viteBuild } = require("vite");
 const { spawn } = require("child_process");
-const { resolve } = require("path");
+const { build: esbuild } = require("esbuild");
 jest.setTimeout(100000);
 let devServer;
 let electronProcess;
 beforeAll(async () => {
   let demoDir = path.join(__dirname, "demo");
-  const options = { root: path.join(demoDir, "renderer") };
+  const options = {
+    root: path.join(demoDir, "renderer"),
+    enableEsbuild: true,
+    outDir: path.join(demoDir, "dist"),
+  };
+  await viteBuild(options);
+
+  esbuild({
+    entryPoints: [path.join(demoDir, "main/index.js")],
+    outfile: path.join(demoDir, "dist/index.js"),
+    minify: true,
+    bundle: false,
+    platform: "node",
+    // external: ["fs", "path", "electron"],
+  }).catch(() => process.exit(1));
+  // export interface CliOptions extends PackagerOptions, PublishOptions {
+  //   x64?: boolean
+  //   ia32?: boolean
+  //   armv7l?: boolean
+  //   arm64?: boolean
+
+  //   dir?: boolean
+  // }
+  return;
   devServer = createServer(options);
   let port = options.port || 3000;
   devServer.on("error", (e) => {
@@ -33,7 +56,7 @@ beforeAll(async () => {
     [path.join(demoDir, "main/index.js")],
     {
       env: {
-        ELECTRON_HMR_SOCKET_PATH: port,
+        WEB_PORT: port,
       },
     }
   );
@@ -43,12 +66,12 @@ beforeAll(async () => {
   });
 });
 afterAll(async () => {
-  return new Promise((resolve) => {
-    electronProcess.on("close", (exitCode) => {
-      devServer.close();
-      resolve();
-    });
-  });
+  // return new Promise((resolve) => {
+  //   electronProcess.on("close", (exitCode) => {
+  //     devServer.close();
+  //     resolve();
+  //   });
+  // });
 });
 describe("vite-electron", () => {
   describe("build", () => {
