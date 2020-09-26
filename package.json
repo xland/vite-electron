@@ -14,7 +14,7 @@
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
   },
-  "repository": "git+https://github.com/xland/vite-electron.git",
+  "repository": "git+https://github.com/xland/vitetron.git",
   "keywords": [
     "vite",
     "electron",
@@ -23,11 +23,11 @@
   "author": "xland",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/xland/vite-electron/issues"
+    "url": "https://github.com/xland/vitetron/issues"
   },
-  "homepage": "https://github.com/xland/vite-electron#readme",
+  "homepage": "https://github.com/xland/vitetron#readme",
   "devDependencies": {
-    "@types/node": "^14.0.27",
+    "@types/node": "^14.11.2",
     "@vue/compiler-sfc": "^3.0.0-rc.7",
     "electron": "^10.1.2",
     "electron-builder": "^22.8.0",

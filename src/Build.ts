@@ -1,3 +1,6 @@
+import { stringify } from "querystring";
+import { Stream } from "stream";
+
 const vite = require("vite");
 const esbuild = require("esbuild");
 const path = require("path");
@@ -7,7 +10,33 @@ const builder = require("electron-builder");
 class Build {
   private releaseDir;
   private bundledDir;
-  private buildConfig;
+  private config;
+  private preparenConfig() {
+    let configPath = path.join(process.cwd(), "vitetron.config.js");
+    if (fs.existsSync(configPath)) {
+      this.config = require(configPath);
+    } else {
+      //todo
+      this.config = {
+        main: "./src/background.ts",
+        build: {
+          appId: "com.xland.app",
+          productName: "ViteElectron示例",
+        },
+        env: {
+          dev: {
+            SERVICE_BASE_URL: "https://dev.yourdomain.site",
+          },
+          test: {
+            SERVICE_BASE_URL: "https://test.yourdomain.site",
+          },
+          release: {
+            SERVICE_BASE_URL: "https://release.yourdomain.site",
+          },
+        },
+      };
+    }
+  }
   private prepareDirs() {
     this.releaseDir = path.join(process.cwd(), "release");
     this.bundledDir = path.join(this.releaseDir, "bundled");
@@ -18,13 +47,12 @@ class Build {
   private preparePackageJson() {
     let pkgJsonPath = path.join(process.cwd(), "package.json");
     let localPkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, "utf-8"));
-    this.buildConfig = localPkgJson.build;
-    delete localPkgJson.build;
     //https://github.com/electron-userland/electron-builder/issues/4157#issuecomment-596419610
     localPkgJson.devDependencies.electron = localPkgJson.devDependencies.electron.replace(
       "^",
       ""
     );
+    localPkgJson.main = path.join(this.bundledDir, "entry_by_vitetron.js");
     fs.writeFileSync(
       path.join(this.bundledDir, "package.json"),
       JSON.stringify(localPkgJson)
@@ -40,37 +68,25 @@ class Build {
     };
     return vite.build(options);
   }
-  private buildMain() {
-    esbuild
-      .build({
-        entryPoints: [path.join(process.cwd(), "src/background.js")],
-        outfile: path.join(this.bundledDir, "background.js"),
-        minify: false,
-        bundle: true,
-        platform: "node",
-        external: ["electron"],
-      })
-      .catch(() => process.exit(1));
+  private async buildMain() {
+    let outFilePath = path.join(this.bundledDir, "entry_by_vitetron.js");
+    esbuild.buildSync({
+      entryPoints: [path.join(process.cwd(), this.config.main)],
+      outfile: outFilePath,
+      minify: true,
+      bundle: true,
+      platform: "node",
+      external: ["electron"],
+    });
+    let releaseEnv = this.config.env.release;
+    releaseEnv.VITETRON = "release";
+    let js = `process.env = {...process.env,...${JSON.stringify(releaseEnv)}};`;
+    let data = fs.readFileSync(outFilePath);
+    fs.writeFileSync(outFilePath, js + data);
+    // var fd = fs.openSync(outFilePath, "w+");
+    // fs.writeSync(fd, js, 0, js.length, 0);
+    // fs.close(fd);
   }
-  // private async ESBuild() {
-  //   //todo 自动创建background.js
-  //   esbuild
-  //     .build({
-  //       entryPoints: [path.join(this.projectPath, "src/background.js")],
-  //       outfile: path.join(this.projectPath, "dist/background.js"),
-  //       minify: true,
-  //       bundle: true,
-  //       platform: "node",
-  //       external: ["electron"],
-  //     })
-  //     .catch(() => process.exit(1));
-  // }
-  // private async copyPakagejson() {
-  //   fs.writeFileSync(
-  //     path.join(this.projectPath, "dist/package.json"),
-  //     fs.readFileSync(path.join(this.projectPath, "package.json"))
-  //   );
-  // }
   private async buildInstaller() {
     //todo release目录
     return builder.build({
@@ -81,7 +97,7 @@ class Build {
         },
         files: ["**"],
         extends: null,
-        ...this.buildConfig,
+        ...this.config.build,
       },
       project: this.releaseDir,
     });
@@ -102,12 +118,11 @@ class Build {
     // });
   }
   async start() {
+    this.preparenConfig();
     this.prepareDirs();
     await this.buildRender();
     this.preparePackageJson();
     await this.buildMain();
-    // await this.ESBuild();
-    // this.copyPakagejson();
     await this.buildInstaller();
   }
 }
