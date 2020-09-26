@@ -23,3 +23,4 @@ const argv = require("minimist")(process.argv.slice(2));
 
 //todo cli
 //"postinstall": "node ./dist/bin/cli.js",
+//todo 生成script配置项
