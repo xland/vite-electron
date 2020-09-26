@@ -5,15 +5,52 @@ const fs = require("fs");
 // const { spawn } = require("child_process");
 const builder = require("electron-builder");
 class Build {
-  private projectPath = process.cwd();
-  //   private builderProcess;
-  private async viteBuild() {
+  private releaseDir;
+  private bundledDir;
+  private buildConfig;
+  private prepareDirs() {
+    this.releaseDir = path.join(process.cwd(), "release");
+    this.bundledDir = path.join(this.releaseDir, "bundled");
+    if (!fs.existsSync(this.releaseDir)) {
+      fs.mkdirSync(this.releaseDir, { recursive: true });
+    }
+  }
+  private preparePackageJson() {
+    let pkgJsonPath = path.join(process.cwd(), "package.json");
+    let localPkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, "utf-8"));
+    this.buildConfig = localPkgJson.build;
+    delete localPkgJson.build;
+    //https://github.com/electron-userland/electron-builder/issues/4157#issuecomment-596419610
+    localPkgJson.devDependencies.electron = localPkgJson.devDependencies.electron.replace(
+      "^",
+      ""
+    );
+    fs.writeFileSync(
+      path.join(this.bundledDir, "package.json"),
+      JSON.stringify(localPkgJson)
+    );
+    //防止electron-builder再安装一次依赖
+    fs.mkdirSync(path.join(this.bundledDir, "node_modules"));
+  }
+  private buildRender() {
     const options = {
-      root: this.projectPath,
+      root: process.cwd(),
       enableEsbuild: true,
-      outDir: path.join(this.projectPath, "dist"),
+      outDir: this.bundledDir,
     };
     return vite.build(options);
+  }
+  private buildMain() {
+    esbuild
+      .build({
+        entryPoints: [path.join(process.cwd(), "src/background.js")],
+        outfile: path.join(this.bundledDir, "background.js"),
+        minify: false,
+        bundle: true,
+        platform: "node",
+        external: ["electron"],
+      })
+      .catch(() => process.exit(1));
   }
   // private async ESBuild() {
   //   //todo 自动创建background.js
@@ -34,35 +71,19 @@ class Build {
   //     fs.readFileSync(path.join(this.projectPath, "package.json"))
   //   );
   // }
-  private async electronBuild() {
-    let bundledDir = path.join(this.projectPath, "dist/bundled");
-    fs.mkdirSync(bundledDir);
-    fs.writeFileSync(
-      path.join(bundledDir, "package.json"),
-      fs.readFileSync(path.join(this.projectPath, "package.json"))
-    );
-    fs.mkdirSync(path.join(bundledDir, "node_modules"));
-    esbuild
-      .build({
-        entryPoints: [path.join(this.projectPath, "src/background.js")],
-        outfile: path.join(bundledDir, "background.js"),
-        minify: false,
-        bundle: true,
-        platform: "node",
-        external: ["electron"],
-      })
-      .catch(() => process.exit(1));
+  private async buildInstaller() {
     //todo release目录
     return builder.build({
       config: {
         directories: {
-          output: path.join(this.projectPath, "dist"),
-          app: path.join(this.projectPath, "dist/bundled"),
+          output: this.releaseDir,
+          app: this.bundledDir,
         },
         files: ["**"],
         extends: null,
+        ...this.buildConfig,
       },
-      project: path.join(this.projectPath, "dist"),
+      project: this.releaseDir,
     });
     // //todo package.json配置main
     // this.builderProcess = spawn(
@@ -81,10 +102,13 @@ class Build {
     // });
   }
   async start() {
-    await this.viteBuild();
+    this.prepareDirs();
+    await this.buildRender();
+    this.preparePackageJson();
+    await this.buildMain();
     // await this.ESBuild();
     // this.copyPakagejson();
-    await this.electronBuild();
+    await this.buildInstaller();
   }
 }
 export let build = new Build();
