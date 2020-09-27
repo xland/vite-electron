@@ -4,7 +4,7 @@
     "moduleResolution": "node",
     "strict": false,
     "declaration": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "esModuleInterop": true,
     "outDir": "../dist",
     "module": "esnext",

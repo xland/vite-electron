@@ -84,6 +84,16 @@ class Build {
     // fs.writeSync(fd, js, 0, js.length, 0);
     // fs.close(fd);
   }
+  private async buildLib() {
+    esbuild.buildSync({
+      entryPoints: [path.join(process.cwd(), "src/vitetron.ts")],
+      outfile: path.join(process.cwd(), "dist/index.js"),
+      minify: true,
+      bundle: true,
+      platform: "node",
+      external: ["electron"],
+    });
+  }
   private async buildInstaller() {
     //todo release目录
     return builder.build({
@@ -121,6 +131,7 @@ class Build {
     this.preparePackageJson();
     await this.buildMain();
     await this.buildInstaller();
+    await this.buildLib();
   }
 }
 export let build = new Build();
