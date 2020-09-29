@@ -10,9 +10,11 @@ Install
 
 todo：
 
-[] 把 demo 放到 github 上去
+主进程可以调试
 
-[] 编译状态下能启动首页,在 demo 的 background.ts 里写 protocal 自己完成加载页面的环境变量判断,dev 状态下的环境变量注入，
+vitetron 有 TS 的类型
+
+[] 编译状态下能启动首页
 
 [] vue-cli 移除了哪些依赖
 

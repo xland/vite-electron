@@ -49,7 +49,7 @@ class Build {
       "^",
       ""
     );
-    localPkgJson.main = path.join(this.bundledDir, "entry_by_vitetron.js");
+    localPkgJson.main = "entry_by_vitetron.js";
     fs.writeFileSync(
       path.join(this.bundledDir, "package.json"),
       JSON.stringify(localPkgJson)
