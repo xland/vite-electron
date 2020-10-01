@@ -6,6 +6,7 @@
   "bin": {
     "vitetron": "./dist/bin/cli.js"
   },
+  "types": "./dist/index.d.ts",
   "scripts": {
     "dev": "tsc -w --incremental --p src",
     "build": "node ./src/build.js",

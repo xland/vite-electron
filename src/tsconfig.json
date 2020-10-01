@@ -4,6 +4,7 @@
     "moduleResolution": "node",
     "strict": false,
     "declaration": true,
+    "declarationDir": "../dist",
     "noUnusedLocals": false,
     "esModuleInterop": true,
     "outDir": "../dist",

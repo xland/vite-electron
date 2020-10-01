@@ -66,23 +66,36 @@ class Build {
     return vite.build(options);
   }
   private async buildMain() {
+    //不能用this.config.main，因为它可能有子路径，主进程必须在根目录下，这样才能让他找到index.html
     let outFilePath = path.join(this.bundledDir, "entry_by_vitetron.js");
+    //这个方法得到的结果：{outputFiles: [ { contents: [Uint8Array], path: '<stdout>' } ]}
     esbuild.buildSync({
       entryPoints: [path.join(process.cwd(), this.config.main)],
-      outfile: outFilePath,
       minify: true,
       bundle: true,
       platform: "node",
       external: ["electron"],
+      outfile: outFilePath,
     });
     let releaseEnv = this.config.env.release;
     releaseEnv.VITETRON = "release";
     let js = `process.env = {...process.env,...${JSON.stringify(releaseEnv)}};`;
     let data = fs.readFileSync(outFilePath);
     fs.writeFileSync(outFilePath, js + data);
+    // 追加到行首失败
     // var fd = fs.openSync(outFilePath, "w+");
     // fs.writeSync(fd, js, 0, js.length, 0);
     // fs.close(fd);
+    // 内存编译失败，这个api不支持platform
+    // let buildResult = esbuild.transformSync(
+    //   path.join(process.cwd(), this.config.main),
+    //   {
+    //     minify: true,
+    //     platform: "node",
+    //     external: ["electron"],
+    //     write: false,
+    //   }
+    // );
   }
   private async buildInstaller() {
     //todo release目录
