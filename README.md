@@ -8,6 +8,17 @@ Install
 
 `yarn add vite-electron --dev`
 
+add scripts to your package.json
+
+```json
+  "scripts": {
+    "start": "vitetron start",
+    "release": "vitetron release"
+  }
+```
+
+run `yarn start`
+
 todo：
 
 主进程可以调试

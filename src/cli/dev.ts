@@ -1,42 +1,15 @@
-const { createServer } = require("vite");
+import { spawn, ChildProcess } from "child_process";
+import { Server } from "http";
+import * as vite from "vite";
+import { Base } from "./base";
 const path = require("path");
-const { spawn } = require("child_process");
 const chalk = require("chalk");
-const esbuild = require("esbuild");
-const fs = require("fs");
 
-class Dev {
+class Dev extends Base {
   private viteServerPort = 3000;
-  private viteServer: any;
-  private electronProcess: any;
-  private projectPath = process.cwd();
-  private config;
-  private preparenConfig() {
-    let configPath = path.join(process.cwd(), "vitetron.config.js");
-    if (fs.existsSync(configPath)) {
-      this.config = eval("require(configPath)");
-    } else {
-      //todo
-      this.config = {
-        main: "./src/background.ts",
-        build: {
-          appId: "com.xland.app",
-          productName: "ViteElectron示例",
-        },
-        env: {
-          dev: {
-            SERVICE_BASE_URL: "https://dev.yourdomain.site",
-          },
-          test: {
-            SERVICE_BASE_URL: "https://test.yourdomain.site",
-          },
-          release: {
-            SERVICE_BASE_URL: "https://release.yourdomain.site",
-          },
-        },
-      };
-    }
-  }
+  private viteServer: Server;
+  private electronProcess: ChildProcess;
+
   private viteServerOnErr(err) {
     if (err.code === "EADDRINUSE") {
       console.log(
@@ -60,27 +33,16 @@ class Dev {
         enableEsbuild: true,
         outDir: path.join(this.projectPath, "dist"),
       };
-      this.viteServer = createServer(options);
+      this.viteServer = vite.createServer(options);
       this.viteServer.on("error", (e: any) => this.viteServerOnErr(e));
       this.viteServer.on("data", (e: any) => {
         console.log(e.toString());
       });
       this.viteServer.listen(this.viteServerPort, () => {
+        //todo 端口占用的问题
         console.log(`http://localhost:${this.viteServerPort}`);
         resolve();
       });
-    });
-  }
-  private async buildMain() {
-    let entryFilePath = path.join(this.projectPath, this.config.main);
-    esbuild.buildSync({
-      entryPoints: [entryFilePath],
-      outfile: entryFilePath + ".js",
-      minify: true,
-      bundle: true,
-      platform: "node",
-      sourcemap: true,
-      external: ["electron"],
     });
   }
   private createElectronProcess() {
@@ -106,10 +68,15 @@ class Dev {
     });
   }
   async start() {
-    this.preparenConfig();
     await this.createViteServer();
-    this.buildMain();
+    this.buildMain(
+      "dev",
+      path.join(this.projectPath, this.config.main + ".js")
+    );
     this.createElectronProcess();
+  }
+  constructor() {
+    super();
   }
 }
 export let dev = new Dev();

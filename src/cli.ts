@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { dev } from "../Dev";
-import { build } from "../Build";
+import { dev } from "./cli/dev";
+import { build } from "./cli/release";
 const argv = require("minimist")(process.argv.slice(2));
 
 (async () => {

@@ -2,13 +2,12 @@
   "name": "vitetron",
   "version": "0.0.1",
   "description": "Create and build electron project with vite and vue3",
-  "main": "./dist/index.js",
   "bin": {
-    "vitetron": "./dist/bin/cli.js"
+    "vitetron": "./dist/cli.js"
   },
   "types": "./dist/index.d.ts",
   "scripts": {
-    "dev": "tsc -w --incremental --p src",
+    "dev": "tsc ./src/vitetron.ts",
     "build": "node ./src/build.js",
     "test": "jest --clearCache && jest --detectOpenHandles --forceExit"
   },

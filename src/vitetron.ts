@@ -1,5 +1,5 @@
 import { BrowserWindow, webContents } from "electron";
-import { Protocol } from "./Lib/Protocol";
+import { Protocol } from "./vitetron/Protocol";
 class Vitetron {
   private protocol: Protocol;
   public load(win: BrowserWindow | webContents, page: string = "index.html") {
@@ -13,5 +13,5 @@ class Vitetron {
     this.protocol = new Protocol();
   }
 }
-let vitetron = new Vitetron();
-export default vitetron;
+//@ts-ignore
+global.vitetron = new Vitetron();
