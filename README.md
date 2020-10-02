@@ -61,17 +61,17 @@ module.exports = {
 };
 ```
 
-- main
+### main
 
-  The entry file of the main process
+The entry file of the main process
 
-- build
+### build
 
-  The [electron-builder's config](https://www.electron.build/configuration/configuration)
+The [electron-builder's config](https://www.electron.build/configuration/configuration)
 
-- env
+### env
 
-  The customized definition of `process.env`
+The customized definition of `process.env`
 
 todo：
 
