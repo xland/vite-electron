@@ -8,6 +8,9 @@ Develop and build electron project with vite and vue3
 $ yarn create vite-app project-name
 $ cd project-name
 $ yarn add vitetron --dev
+$ yarn add electron --dev
+$ yarn add electron-builder --dev
+$ yarn add esbuild --dev
 ```
 
 Add `background.js` or `background.ts` at the ./src folder
