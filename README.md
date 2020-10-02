@@ -19,7 +19,7 @@ import { app, BrowserWindow } from "electron";
 let win;
 app.on("ready", () => {
   win = new BrowserWindow();
-  vitetron.load(win, "index.html"); //vitetron will be injected automaticly
+  vitetron.load(win, "index.html"); //vitetron will be injected automaticly.
 });
 ```
 
@@ -62,11 +62,16 @@ module.exports = {
 ```
 
 - main
+
   The entry file of the main process
+
 - build
+
   The [electron-builder's config](https://www.electron.build/configuration/configuration)
+
 - env
-  The customized definition of `process.env`,
+
+  The customized definition of `process.env`
 
 todo：
 
