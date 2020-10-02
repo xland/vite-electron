@@ -10,7 +10,7 @@ Develop and build electron project with vite and vue3
 yarn add vitetron --dev
 ```
 
-Add background.js `or background.ts` at the ./src folder
+Add `background.js` or `background.ts` at the ./src folder
 
 Set the file's content with:
 
@@ -36,6 +36,38 @@ run `yarn start` to develope,`yarn release` for build
 
 ## Config
 
+Add `vitetron.config.js` at the root of the project
+
+Set the file's content with
+
+```js
+module.exports = {
+  main: "./src/background.ts",
+  build: {
+    appId: "com.xland.app",
+    productName: "ViteElectron示例",
+  },
+  env: {
+    dev: {
+      SERVICE_BASE_URL: "https://dev.yourdomain.site",
+    },
+    test: {
+      SERVICE_BASE_URL: "https://test.yourdomain.site",
+    },
+    release: {
+      SERVICE_BASE_URL: "https://release.yourdomain.site",
+    },
+  },
+};
+```
+
+- main
+  The entry file of the main process
+- build
+  The [electron-builder's config](https://www.electron.build/configuration/configuration)
+- env
+  The customized definition of `process.env`,
+
 todo：
 
 主进程可以调试
@@ -47,5 +79,3 @@ vitetron 有 TS 的类型
 [] vue-cli 移除了哪些依赖
 
 [] 测试一下包含外部引用的主进程入口程序
-
-把 vitetron 对象做成全局的
