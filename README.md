@@ -13,7 +13,7 @@ $ yarn add electron-builder --dev
 $ yarn add esbuild --dev
 ```
 
-Add `background.js` or `background.ts` at the ./src folder
+Add `background.ts` at the ./src folder
 
 Set the file's content with:
 
@@ -66,7 +66,7 @@ module.exports = {
 
 ### main
 
-The entry file of the main process
+The entry file of the main process,`.js` and `.ts` file are supported
 
 ### build
 
