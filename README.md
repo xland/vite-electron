@@ -4,7 +4,7 @@ Create and build electron project with vite and vue3
 
 Install
 
-`yarn add vite-electron --dev`
+`yarn add vitetron --dev`
 
 add scripts to your package.json
 
