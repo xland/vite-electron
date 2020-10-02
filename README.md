@@ -4,9 +4,9 @@ Develop and build electron project with vite and vue3
 
 ## Install
 
-> yarn create vite-app project-name
-
 ```bash
+yarn create vite-app project-name
+cd project-name
 yarn add vitetron --dev
 ```
 
