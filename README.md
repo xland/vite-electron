@@ -1,4 +1,4 @@
-# vite-electron
+# vitetron
 
 Create and build electron project with vite and vue3
 
