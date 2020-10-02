@@ -1,6 +1,6 @@
 # vitetron
 
-Create and build electron project with vite and vue3
+Develop and build electron project with vite and vue3
 
 Install
 
