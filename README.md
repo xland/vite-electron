@@ -73,14 +73,12 @@ The [electron-builder's config](https://www.electron.build/configuration/configu
 
 The customized definition of `process.env`
 
-todo：
+## todo：
 
 主进程可以调试
 
 vitetron 有 TS 的类型
 
-[] 编译状态下能启动首页
+vue-cli 移除了哪些依赖
 
-[] vue-cli 移除了哪些依赖
-
-[] 测试一下包含外部引用的主进程入口程序
+测试一下包含外部引用的主进程入口程序
