@@ -4,9 +4,20 @@ const fs = require("fs");
 const os = require("os");
 
 export class Base {
-  config;
-  projectPath = process.cwd();
-  private preparenConfig() {
+  protected config;
+  protected projectPath = process.cwd();
+  protected releaseDir;
+  protected bundledDir;
+  private prepareDirs() {
+    this.releaseDir = path.join(this.projectPath, "release");
+    this.bundledDir = path.join(this.releaseDir, "bundled");
+    if (!fs.existsSync(this.bundledDir)) {
+      fs.mkdirSync(this.bundledDir, { recursive: true });
+      //防止electron-builder再安装一次依赖
+      fs.mkdirSync(path.join(this.bundledDir, "node_modules"));
+    }
+  }
+  protected preparenConfig() {
     let configPath = path.join(process.cwd(), "vitetron.config.js");
     if (fs.existsSync(configPath)) {
       this.config = eval("require(configPath)");
@@ -23,7 +34,22 @@ export class Base {
     if (!this.config.env.dev) this.config.env.dev = {};
     if (!this.config.env.release) this.config.env.release = {};
   }
-  protected buildMain(env = "dev", outfile = "") {
+  private preparePackageJson() {
+    let pkgJsonPath = path.join(process.cwd(), "package.json");
+    let localPkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, "utf-8"));
+    //https://github.com/electron-userland/electron-builder/issues/4157#issuecomment-596419610
+    localPkgJson.devDependencies.electron = localPkgJson.devDependencies.electron.replace(
+      "^",
+      ""
+    );
+    localPkgJson.main = "entry_by_vitetron.js";
+    fs.writeFileSync(
+      path.join(this.bundledDir, "package.json"),
+      JSON.stringify(localPkgJson)
+    );
+  }
+  protected buildMain(env = "dev") {
+    let outfile = path.join(this.bundledDir, "entry_by_vitetron.js");
     //不能用this.config.main，因为它可能有子路径，主进程必须在根目录下，这样才能让他找到index.html
     let entryFilePath = path.join(this.projectPath, this.config.main);
     //这个方法得到的结果：{outputFiles: [ { contents: [Uint8Array], path: '<stdout>' } ]}
@@ -41,9 +67,9 @@ export class Base {
     let js = `process.env={...process.env,...${JSON.stringify(envObj)}};${
       os.EOL
     }${fs.readFileSync(__dirname + "\\vitetron.js")};${os.EOL}${fs.readFileSync(
-      entryFilePath + ".js"
+      outfile
     )}`;
-    fs.writeFileSync(entryFilePath + ".js", js);
+    fs.writeFileSync(outfile, js);
     // 追加到行首失败
     // var fd = fs.openSync(outFilePath, "w+");
     // fs.writeSync(fd, js, 0, js.length, 0);
@@ -61,5 +87,7 @@ export class Base {
   }
   constructor() {
     this.preparenConfig();
+    this.prepareDirs();
+    this.preparePackageJson();
   }
 }

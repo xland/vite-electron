@@ -49,12 +49,10 @@ class Dev extends Base {
     //todo 自动创建background.js
     this.electronProcess = spawn(
       require("electron").toString(),
-      [path.join(this.projectPath, this.config.main + ".js")],
+      [this.bundledDir],
       {
         env: {
-          WEB_PORT: this.viteServerPort,
-          VITETRON: "dev",
-          ...this.config.env.dev,
+          WEB_PORT: this.viteServerPort.toString(),
         },
       }
     );
@@ -67,12 +65,14 @@ class Dev extends Base {
       console.log(data);
     });
   }
-  async start() {
+  async start(argv?) {
     await this.createViteServer();
-    this.buildMain(
-      "dev",
-      path.join(this.projectPath, this.config.main + ".js")
-    );
+    this.buildMain("dev");
+    console.log("debug flag", argv && argv.debug);
+    if (argv && argv.debug) {
+      console.log("launch electron through your debugger");
+      return;
+    }
     this.createElectronProcess();
   }
   constructor() {

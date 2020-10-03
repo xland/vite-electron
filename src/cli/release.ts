@@ -7,31 +7,6 @@ const fs = require("fs");
 // const { spawn } = require("child_process");
 const builder = require("electron-builder");
 class Build extends Base {
-  private releaseDir;
-  private bundledDir;
-  private prepareDirs() {
-    this.releaseDir = path.join(this.projectPath, "release");
-    this.bundledDir = path.join(this.releaseDir, "bundled");
-    if (!fs.existsSync(this.releaseDir)) {
-      fs.mkdirSync(this.releaseDir, { recursive: true });
-    }
-  }
-  private preparePackageJson() {
-    let pkgJsonPath = path.join(process.cwd(), "package.json");
-    let localPkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, "utf-8"));
-    //https://github.com/electron-userland/electron-builder/issues/4157#issuecomment-596419610
-    localPkgJson.devDependencies.electron = localPkgJson.devDependencies.electron.replace(
-      "^",
-      ""
-    );
-    localPkgJson.main = "entry_by_vitetron.js";
-    fs.writeFileSync(
-      path.join(this.bundledDir, "package.json"),
-      JSON.stringify(localPkgJson)
-    );
-    //防止electron-builder再安装一次依赖
-    fs.mkdirSync(path.join(this.bundledDir, "node_modules"));
-  }
   private buildRender() {
     const options = {
       root: process.cwd(),
@@ -70,14 +45,9 @@ class Build extends Base {
     //   console.log(data);
     // });
   }
-  async start() {
-    this.prepareDirs();
+  async start(argv?) {
     await this.buildRender();
-    this.preparePackageJson();
-    await this.buildMain(
-      "release",
-      path.join(this.bundledDir, "entry_by_vitetron.js")
-    );
+    await this.buildMain("release");
     await this.buildInstaller();
   }
   constructor() {

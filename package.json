@@ -1,6 +1,6 @@
 {
   "name": "vitetron",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Create and build electron project with vite and vue3",
   "main": "/dist/vitetron.js",
   "bin": {

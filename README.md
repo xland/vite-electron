@@ -91,3 +91,11 @@ vue-cli 移除了哪些依赖
 尽量把需要的库都给它装好
 
 自动创建 script 命令
+
+test on mac
+
+启动时传递额外的参数给 electron
+
+注入的脚本，怎么编译
+
+把 win.loadURL shake 掉一个分支
