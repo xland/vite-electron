@@ -15,9 +15,9 @@ const argv = require("minimist")(process.argv.slice(2));
     return;
   }
   if (command === "start") {
-    dev.start(argv);
+    await dev.start(argv);
   } else if (command === "release") {
-    build.start(argv);
+    await build.start(argv);
   }
 })();
 

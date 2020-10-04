@@ -6,7 +6,6 @@ const path = require("path");
 const chalk = require("chalk");
 
 class Dev extends Base {
-  private viteServerPort = 3000;
   private viteServer: Server;
   private electronProcess: ChildProcess;
 
@@ -49,11 +48,9 @@ class Dev extends Base {
     //todo 自动创建background.js
     this.electronProcess = spawn(
       require("electron").toString(),
-      [this.bundledDir],
+      [path.join(this.projectPath,"src/entry_by_vitetron.js")],
       {
-        env: {
-          WEB_PORT: this.viteServerPort.toString(),
-        },
+        env: { },
       }
     );
     this.electronProcess.on("close", () => {
@@ -67,8 +64,7 @@ class Dev extends Base {
   }
   async start(argv?) {
     await this.createViteServer();
-    this.buildMain("dev");
-    console.log("debug flag", argv && argv.debug);
+    await this.buildMain("dev");
     if (argv && argv.debug) {
       console.log("launch electron through your debugger");
       return;

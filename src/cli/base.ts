@@ -8,6 +8,7 @@ export class Base {
   protected projectPath = process.cwd();
   protected releaseDir;
   protected bundledDir;
+  protected viteServerPort = 3000;
   private prepareDirs() {
     this.releaseDir = path.join(this.projectPath, "release");
     this.bundledDir = path.join(this.releaseDir, "bundled");
@@ -49,7 +50,8 @@ export class Base {
     );
   }
   protected buildMain(env = "dev") {
-    let outfile = path.join(this.bundledDir, "entry_by_vitetron.js");
+    let targetDir = env === "dev"?path.join(this.projectPath,"src"):this.bundledDir
+    let outfile = path.join(targetDir, "entry_by_vitetron.js");
     //不能用this.config.main，因为它可能有子路径，主进程必须在根目录下，这样才能让他找到index.html
     let entryFilePath = path.join(this.projectPath, this.config.main);
     //这个方法得到的结果：{outputFiles: [ { contents: [Uint8Array], path: '<stdout>' } ]}
@@ -64,6 +66,7 @@ export class Base {
     });
     let envObj = this.config.env[env];
     envObj.VITETRON = env;
+    envObj.WEB_PORT = this.viteServerPort.toString();
     let js = `process.env={...process.env,...${JSON.stringify(envObj)}};${
       os.EOL
     }${fs.readFileSync(__dirname + "\\vitetron.js")};${os.EOL}${fs.readFileSync(
