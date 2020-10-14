@@ -9,7 +9,7 @@ export class Base {
   protected releaseDir;
   protected bundledDir;
   protected viteServerPort = 3000;
-  private prepareDirs() {
+  protected prepareDirs() {
     this.releaseDir = path.join(this.projectPath, "release");
     this.bundledDir = path.join(this.releaseDir, "bundled");
     if (!fs.existsSync(this.bundledDir)) {
@@ -35,15 +35,16 @@ export class Base {
     if (!this.config.env.dev) this.config.env.dev = {};
     if (!this.config.env.release) this.config.env.release = {};
   }
-  private preparePackageJson() {
+  protected preparePackageJson() {
     let pkgJsonPath = path.join(process.cwd(), "package.json");
     let localPkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, "utf-8"));
     //https://github.com/electron-userland/electron-builder/issues/4157#issuecomment-596419610
-    localPkgJson.devDependencies.electron = localPkgJson.devDependencies.electron.replace(
-      "^",
-      ""
-    );
+    let electronConfig = localPkgJson.devDependencies.electron.replace("^","");
     localPkgJson.main = "entry_by_vitetron.js";
+    delete localPkgJson.scripts
+    delete localPkgJson.devDependencies
+    localPkgJson.devDependencies = {electron:electronConfig}
+    console.log(path.join(this.bundledDir, "package.json"))
     fs.writeFileSync(
       path.join(this.bundledDir, "package.json"),
       JSON.stringify(localPkgJson)
@@ -61,14 +62,15 @@ export class Base {
       minify: env === "release",
       bundle: true,
       platform: "node",
-      sourcemap: env === "dev",
+      // sourcemap: env === "dev",
+      sourcemap: false,
       external: ["electron"],
     });
     let envObj = this.config.env[env];
     envObj.VITETRON = env;
     envObj.WEB_PORT = this.viteServerPort.toString();
-    let js = `process.env={...process.env,...${JSON.stringify(envObj)}};
-    ${fs.readFileSync(outfile)}`;
+    let envScript = `process.env={...process.env,...${JSON.stringify(envObj)}};`
+    let js = `${envScript}${os.EOL}${fs.readFileSync(outfile)}`;
     fs.writeFileSync(outfile, js);
     // 追加到行首失败
     // var fd = fs.openSync(outFilePath, "w+");
@@ -87,7 +89,5 @@ export class Base {
   }
   constructor() {
     this.preparenConfig();
-    this.prepareDirs();
-    this.preparePackageJson();
   }
 }

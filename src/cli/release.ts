@@ -47,6 +47,8 @@ class Build extends Base {
   }
   async start(argv?) {
     await this.buildRender();
+    await this.prepareDirs();
+    await this.preparePackageJson();
     await this.buildMain("release");
     await this.buildInstaller();
   }
