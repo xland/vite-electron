@@ -16,11 +16,11 @@ esbuild.buildSync({
     ...(localPkgJson.peerDependencies || {}),
   }),
 });
-esbuild.buildSync({
-  entryPoints: [path.join(process.cwd(), "src/vitetron.ts")],
-  outfile: path.join(process.cwd(), "dist/vitetron.js"),
-  minify: true,
-  bundle: true,
-  platform: "node",
-  external: ["electron"],
-});
+// esbuild.buildSync({
+//   entryPoints: [path.join(process.cwd(), "src/vitetron.ts")],
+//   outfile: path.join(process.cwd(), "dist/vitetron.js"),
+//   minify: true,
+//   bundle: true,
+//   platform: "node",
+//   external: ["electron"],
+// });

@@ -1,6 +1,6 @@
 import { BrowserWindow, webContents } from "electron";
 import { Protocol } from "./vitetron/Protocol";
-class Vitetron {
+class Page {
   private protocol: Protocol;
   public load(win: BrowserWindow | webContents, page: string = "index.html") {
     if (process.env.VITETRON === "dev") {
@@ -13,5 +13,4 @@ class Vitetron {
     this.protocol = new Protocol();
   }
 }
-//@ts-ignore
-global.vitetron = new Vitetron();
+export let page = new Page();

@@ -67,11 +67,8 @@ export class Base {
     let envObj = this.config.env[env];
     envObj.VITETRON = env;
     envObj.WEB_PORT = this.viteServerPort.toString();
-    let js = `process.env={...process.env,...${JSON.stringify(envObj)}};${
-      os.EOL
-    }${fs.readFileSync(__dirname + "\\vitetron.js")};${os.EOL}${fs.readFileSync(
-      outfile
-    )}`;
+    let js = `process.env={...process.env,...${JSON.stringify(envObj)}};
+    ${fs.readFileSync(outfile)}`;
     fs.writeFileSync(outfile, js);
     // 追加到行首失败
     // var fd = fs.openSync(outFilePath, "w+");
