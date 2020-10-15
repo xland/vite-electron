@@ -48,7 +48,7 @@ class Dev extends Base {
     //todo 自动创建background.js
     this.electronProcess = spawn(
       require("electron").toString(),
-      [path.join(this.projectPath,"src/entry_by_vitetron.js")],
+      [path.join(this.bundledDir,"entry_by_vitetron.js")],
       {
         env: { },
       }
@@ -63,6 +63,7 @@ class Dev extends Base {
     });
   }
   async start(argv?) {
+    await this.prepareDirs();
     await this.createViteServer();
     await this.buildMain("dev");
     if (argv && argv.debug) {

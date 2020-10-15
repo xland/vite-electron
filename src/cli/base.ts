@@ -14,8 +14,6 @@ export class Base {
     this.bundledDir = path.join(this.releaseDir, "bundled");
     if (!fs.existsSync(this.bundledDir)) {
       fs.mkdirSync(this.bundledDir, { recursive: true });
-      //防止electron-builder再安装一次依赖
-      fs.mkdirSync(path.join(this.bundledDir, "node_modules"));
     }
   }
   protected preparenConfig() {
@@ -44,15 +42,15 @@ export class Base {
     delete localPkgJson.scripts
     delete localPkgJson.devDependencies
     localPkgJson.devDependencies = {electron:electronConfig}
-    console.log(path.join(this.bundledDir, "package.json"))
     fs.writeFileSync(
       path.join(this.bundledDir, "package.json"),
       JSON.stringify(localPkgJson)
     );
+    //防止electron-builder再安装一次依赖
+    fs.mkdirSync(path.join(this.bundledDir, "node_modules"));
   }
   protected buildMain(env = "dev") {
-    let targetDir = env === "dev"?path.join(this.projectPath,"src"):this.bundledDir
-    let outfile = path.join(targetDir, "entry_by_vitetron.js");
+    let outfile = path.join(this.bundledDir, "entry_by_vitetron.js");
     //不能用this.config.main，因为它可能有子路径，主进程必须在根目录下，这样才能让他找到index.html
     let entryFilePath = path.join(this.projectPath, this.config.main);
     //这个方法得到的结果：{outputFiles: [ { contents: [Uint8Array], path: '<stdout>' } ]}

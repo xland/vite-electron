@@ -72,6 +72,8 @@ The entry file of the main process,`.js` and `.ts` file are supported
 
 The [electron-builder's config](https://www.electron.build/configuration/configuration)
 
+Do not set `directories` for the config
+
 ### env
 
 The customized definition of `process.env`
